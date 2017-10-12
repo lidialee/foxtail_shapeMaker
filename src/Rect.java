@@ -18,18 +18,14 @@ public class Rect extends Shape {
     @Override
     void draw(PApplet pApplet) {
         int[] color = getColor();
-        float shapeX = getPoint().getX();
-        float shapeY = getPoint().getY();
 
         pApplet.fill(color[0], color[1], color[2]);
-        pApplet.rect(shapeX - WIDE, shapeY - WIDE, WIDE * 2, WIDE * 2);
+        pApplet.rect(getPoint().getX() - WIDE, getPoint().getY() - WIDE, WIDE * 2, WIDE * 2);
     }
 
     @Override
     boolean isCollision(int x, int y) {
-        float shapeX = getPoint().getX();
-        float shapeY = getPoint().getY();
-        return shapeX + WIDE >= x && shapeX - WIDE <= x && shapeY + WIDE >= y && shapeY - WIDE <= y;
+        return getPoint().getX() + WIDE >= x && getPoint().getX() - WIDE <= x && getPoint().getY() + WIDE >= y && getPoint().getY() - WIDE <= y;
     }
 
     @Override

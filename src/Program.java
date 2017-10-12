@@ -119,7 +119,6 @@ public class Program extends PApplet {
     @Override
     public void mouseDragged() {
         if (choiceShape != null){
-            System.out.println(mouseX+";"+mouseY);
             choiceShape.setPoint(new Point(mouseX, mouseY)); // 드래그 될때마다 위치값을 바꾼다
         }
     }
