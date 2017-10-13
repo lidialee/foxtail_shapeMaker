@@ -1,5 +1,7 @@
 import processing.core.PApplet;
 
+import java.awt.*;
+
 public class Rect extends Shape {
     private static float WIDE = 45;         // 정사각형 한변의 1/2 길이
 
@@ -17,9 +19,9 @@ public class Rect extends Shape {
 
     @Override
     void draw(PApplet pApplet) {
-        int[] color = getColor();
+        Color color = getColor();
 
-        pApplet.fill(color[0], color[1], color[2]);
+        pApplet.fill(color.getRed(), color.getGreen(), color.getBlue());
         pApplet.rect(getPoint().getX() - WIDE, getPoint().getY() - WIDE, WIDE * 2, WIDE * 2);
     }
 

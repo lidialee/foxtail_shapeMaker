@@ -1,5 +1,7 @@
 import processing.core.PApplet;
 
+import java.awt.*;
+
 public class Circle extends Shape {
     private static float RADIUS = 45;
 
@@ -18,9 +20,9 @@ public class Circle extends Shape {
     @Override
     void draw(PApplet pApplet) {
         // 일단 컬러는 임의로 설정
-        int[] color = getColor();
+        Color color = getColor();
 
-        pApplet.fill(color[0], color[1], color[2]);
+        pApplet.fill(color.getRed(), color.getGreen(), color.getBlue());
         pApplet.ellipse(getPoint().getX(), getPoint().getY(), RADIUS * 2, RADIUS * 2);
     }
 

@@ -1,15 +1,16 @@
 import processing.core.PApplet;
 
+import java.awt.*;
 import java.io.Serializable;
 
 public abstract class Shape implements Cloneable,Serializable {
     private int shapeType;
-    private int[] color ;    // 배열로 하지 만ㄹ자
+    private Color color ;    // 배열로 하지 만ㄹ자
     private Point point;
 
     public Shape(int shapeType) {
         this.shapeType = shapeType;
-        color = new int[]{0, 200, 90};
+        color = Color.darkGray;
     }
 
     abstract void draw(PApplet pApplet);
@@ -25,10 +26,10 @@ public abstract class Shape implements Cloneable,Serializable {
         }
     }
 
-    public int[] getColor() { return color; }
+    public Color getColor() { return color; }
     public Point getPoint() { return point; }
 
     // 색변경 혹은 드래그에 의한 위치변경
-    public void setColor(int[] color) { this.color = color; }
+    public void setColor(Color color) { this.color = color; }
     public void setPoint(Point point) { this.point = point; }
 }

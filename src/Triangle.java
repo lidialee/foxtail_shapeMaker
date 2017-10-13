@@ -1,5 +1,7 @@
 import processing.core.PApplet;
 
+import java.awt.*;
+
 /**
  * 주의사항
  * 모든 것은 '정삼각형'으로 그려지고 계산되도록 함수를 작성하였다
@@ -41,10 +43,10 @@ public class Triangle extends Shape {
 
     @Override
     void draw(PApplet pApplet) {
-        int[] color = getColor();
+        Color color = getColor();
         Point point = getPoint();
 
-        pApplet.fill(color[0], color[1], color[2]);
+        pApplet.fill(color.getRed(), color.getGreen(), color.getBlue());
         pApplet.triangle(B_L_Point[0], B_L_Point[1], T_Point[0], T_Point[1], B_R_Point[0], B_R_Point[1]);
     }
 
