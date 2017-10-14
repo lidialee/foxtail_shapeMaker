@@ -15,7 +15,7 @@ public class Triangle extends Shape {
     private static float SHORTEST = 30;   // 내심에서 삼각형 밑변까지 수직길이
     private float[] B_L_Point;            // 왼쪽 아래 꼭지점
     private float[] B_R_Point;            // 오른쪽 아래 꼭지점
-    private float[] T_Point;            // 윗 꼭지점
+    private float[] T_Point;              // 윗 꼭지점
 
     public Triangle() {
         super(3);
@@ -39,6 +39,7 @@ public class Triangle extends Shape {
 
         B_R_Point[0] = (float) (point.getX() + SHORTEST * Math.sqrt(3));
         B_R_Point[1] = point.getY() + SHORTEST;
+
     }
 
     @Override

@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import processing.core.PApplet;
 
 import java.awt.*;
@@ -43,7 +44,7 @@ public class Program extends PApplet {
                 if (list.size() > 0) {
                     System.out.println("click one Shape that you want to copy");
                     status = MODE_STATUS.COPY;
-                }else{
+                } else {
                     System.out.println("nothing to copy");
                 }
             } else if (keyCode == 's' || keyCode == 'S') {
@@ -53,7 +54,9 @@ public class Program extends PApplet {
             } else if (keyCode == 'r' || keyCode == 'R') {
                 clearBoard();
             } else if (keyCode == 'a' || keyCode == 'A') {
-                System.out.println("현재 도형수 : "+list.size());
+                System.out.println("현재 도형수 : " + list.size());
+            } else if(keyCode == 'o' || keyCode == 'O'){
+
             }
         }
     }
@@ -105,7 +108,6 @@ public class Program extends PApplet {
     @Override
     public void mousePressed() {
         int collisionShapeNumber = checkCollision();
-        System.out.println("상태 : "+status+" 충돌은 "+collisionShapeNumber);
         Shape copyTarget = null;
 
         switch (status) {
@@ -119,7 +121,7 @@ public class Program extends PApplet {
                 break;
 
             case COPY:
-                if(collisionShapeNumber!=NO_COLLISION){
+                if (collisionShapeNumber != NO_COLLISION) {
                     copyTarget = list.get(collisionShapeNumber);
                     Point newShapePoint = new Point(copyTarget.getPoint().getX() + 20, copyTarget.getPoint().getY() + 20);
 
@@ -129,7 +131,7 @@ public class Program extends PApplet {
                     newShape = null;
 
                     status = MODE_STATUS.MOVE;
-                }else
+                } else
                     System.out.println("There is no Shape. please click the shape what you wanna copy");
 
                 break;
@@ -163,18 +165,15 @@ public class Program extends PApplet {
 
     // 현재 그림판 상태 저장
     private void saveShapes() {
-        try {
-            FileOutputStream fileStream = new FileOutputStream("MyGame.ser");
-            ObjectOutputStream os = new ObjectOutputStream(fileStream);
+        try(FileOutputStream fileStream = new FileOutputStream("MyGame.dat");
+                        ObjectOutputStream os = new ObjectOutputStream(fileStream)){
 
             for (Shape e : list)
                 os.writeObject(e);
             os.writeObject(null);       // null을 읽으면
-
-            os.close();
-            fileStream.close();
+           // os.close();
+           // fileStream.close();
             System.out.println("저장 완료");
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -182,18 +181,19 @@ public class Program extends PApplet {
 
     // 이전 그림 불러오기
     private void loadShapes() {
-        try {
-            FileInputStream fileStream = new FileInputStream("MyGame.ser");
-            ObjectInputStream is = new ObjectInputStream(fileStream);
+        try ( FileInputStream fileStream = new FileInputStream("MyGame.dat");
+              ObjectInputStream is = new ObjectInputStream(fileStream) ){
             Shape shape;
+
+            list.clear();   // 먼저 기존을 삭제하고 불러오자
 
             do {
                 shape = (Shape) is.readObject();
                 if (shape != null) list.add(shape);
             } while (shape != null);
 
-            is.close();
-            fileStream.close();
+            //is.close();
+            //fileStream.close();
             System.out.println("불러오기 완료");
 
         } catch (IOException | ClassNotFoundException e) {
@@ -222,28 +222,31 @@ public class Program extends PApplet {
             newShape = new Triangle();
         }
     }
-
+    private void showProperty(){
+        for(Shape e :list){
+            System.out.println(e.getPoint().getX()+" : "+e.getPoint().getY());
+        }
+    }
 }
 
+// 오늘의 개념
+// 객체 -->  바이트 스트림으로 바꾸는 것 직렬화 ( = serialization, 먀살링 )
+// serializable interface = markup interface ( Cloneable과 같네  )
+// --> 왠만해서 이런 직렬은 안좋다, 왜? 불필요한것 까지 저장되기 때문
+// --> 저장되지 않아도 되는걸 transient로 설정하는 것 좋다
+// 반대 개념 --> 역직렬화 ( = deserialization , 언마샬링 )
 
-// 새로운 도형 위치 입력받는 함수
-//    @Override
-//    public void mouseClicked() {
-//        int collisionShapeNumber = checkCollision();
-//        if (collisionShapeNumber == NO_COLLISION && newShape != null) {
-//            newShape.setPoint(new Point(mouseX, mouseY));
-//            list.add(newShape);
-//            newShape = null;
-//        }
-//    }
-//    // 복사하기 함수
-//    private void copyShape() {
-//        if (list.size() > 0) {
-//            System.out.print("몇 번 도형을 복제할지 콘솔창에 입력후 복제할 위치를 클릭해주세요>> ");
-//            Scanner scanner = new Scanner(System.in);
-//            int num = scanner.nextInt();
-//            newShape = list.get(num).clone();
-//        } else
-//            System.out.println(" 아무것도 그려져 있지 않습니다 ");
-//
-//    }
+// for 문을 사용하지 않고 그냥 한줄로 끝낼 수 있다
+// java.awt 라이브러리의 Color 객체를 사용하지 않는 것이 좋다
+// 저 라이브러리에 종속성이 생긴다
+// 꼭 color를 따로 만들자
+
+// 텍스트로 저장하는 것이 좋지 --> json 형식으로 저장하는 것도 심플하고 좋다  // Gson
+// 다른 기종간의 쉬운 의사 전달을 위해 텍스트로 하는게 제이슨
+// 다른 기종간 바이너리 파일 전달을 위한 것이 google protocol buffer (GERPC) RAM = RPC
+// 자바 컨벤션 -- camel 표기법
+
+// try with resource;
+
+// 숙제 : json을 통해 저장
+// google의 프로토콜 버퍼 사용해서 해보기

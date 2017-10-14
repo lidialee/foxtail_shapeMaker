@@ -22,4 +22,9 @@ public class Point implements Serializable{
     public void setY(float y) {
         this.y = y;
     }
+
+   // public static float add
+    // multiple 등등
+
+
 }

@@ -34,4 +34,5 @@ public class Rect extends Shape {
     public Rect clone() {
         return (Rect) super.clone();
     }
+
 }
