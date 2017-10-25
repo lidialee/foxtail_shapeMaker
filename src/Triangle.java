@@ -47,7 +47,7 @@ public class Triangle extends Shape {
         Color color = getColor();
         Point point = getPoint();
 
-        pApplet.fill(color.getRed(), color.getGreen(), color.getBlue());
+        pApplet.fill(color.getR(), color.getG(), color.getB());
         pApplet.triangle(B_L_Point[0], B_L_Point[1], T_Point[0], T_Point[1], B_R_Point[0], B_R_Point[1]);
     }
 

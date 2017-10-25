@@ -21,7 +21,7 @@ public class Rect extends Shape {
     void draw(PApplet pApplet) {
         Color color = getColor();
 
-        pApplet.fill(color.getRed(), color.getGreen(), color.getBlue());
+        pApplet.fill(color.getR(), color.getG(), color.getB());
         pApplet.rect(getPoint().getX() - WIDE, getPoint().getY() - WIDE, WIDE * 2, WIDE * 2);
     }
 

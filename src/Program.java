@@ -1,8 +1,11 @@
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import processing.core.PApplet;
 
-import java.awt.*;
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -55,7 +58,7 @@ public class Program extends PApplet {
                 clearBoard();
             } else if (keyCode == 'a' || keyCode == 'A') {
                 System.out.println("현재 도형수 : " + list.size());
-            } else if(keyCode == 'o' || keyCode == 'O'){
+            } else if (keyCode == 'o' || keyCode == 'O') {
 
             }
         }
@@ -140,11 +143,10 @@ public class Program extends PApplet {
                 if (newShape == null && collisionShapeNumber != NO_COLLISION) {
                     System.out.println("케이스 Move 진입");
                     choiceShape = list.get(collisionShapeNumber); // 선택한 도형 목록에서 가져오기
-                    choiceShape.setColor(Color.PINK); // 드래그 중에는 색이 변한다
+                    choiceShape.setColor(new Color(100,200,50)); // 드래그 중에는 색이 변한다
                 }
                 break;
         }
-
     }
 
     @Override
@@ -158,22 +160,22 @@ public class Program extends PApplet {
     @Override
     public void mouseReleased() {
         if (choiceShape != null) {
-            choiceShape.setColor(Color.darkGray); // 드래그 완료되면 원래 색으로 되돌리기
+            choiceShape.setColor(new Color(0,0,0)); // 드래그 완료되면 원래 색으로 되돌리기
             choiceShape = null;
         }
     }
 
     // 현재 그림판 상태 저장
+    //
     private void saveShapes() {
-        try(FileOutputStream fileStream = new FileOutputStream("MyGame.dat");
-                        ObjectOutputStream os = new ObjectOutputStream(fileStream)){
+        try{
+            Gson gson = new Gson();
+            String gsonString = gson.toJson(list);
+            FileWriter writer = new FileWriter("filebox.txt");
+            writer.write(gsonString);
+            writer.close();
 
-            for (Shape e : list)
-                os.writeObject(e);
-            os.writeObject(null);       // null을 읽으면
-           // os.close();
-           // fileStream.close();
-            System.out.println("저장 완료");
+            System.out.println(" 저장 완료 ");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,22 +183,29 @@ public class Program extends PApplet {
 
     // 이전 그림 불러오기
     private void loadShapes() {
-        try ( FileInputStream fileStream = new FileInputStream("MyGame.dat");
-              ObjectInputStream is = new ObjectInputStream(fileStream) ){
-            Shape shape;
-
+        try {
             list.clear();   // 먼저 기존을 삭제하고 불러오자
 
-            do {
-                shape = (Shape) is.readObject();
-                if (shape != null) list.add(shape);
-            } while (shape != null);
+            JsonParser parser = new JsonParser();
+            parser.parse(new FileReader("filebox.txt"));
+            Gson gson = new Gson();
 
-            //is.close();
-            //fileStream.close();
+
+            // 각 도형에 대해서 어떻게 저장할지 그 계층을 정의ㅎ해부자
+            //Gson gson1 = new GsonBuilder().registerTypeHierarchyAdapter(Shape.class,new ShapeTypeAdapter).create();
+
+
+            // Shape shape = gson.fromJson( string ,Shape.class);
+
+            // 일단 list<shape>에서 shape를 알아내는 방법
+            // Type type = new TypeToken<List<Shape>>(){}.getType();
+            // Shape shape = gson.fromJson(string인 json, type);
+
+
+
             System.out.println("불러오기 완료");
 
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -216,15 +225,15 @@ public class Program extends PApplet {
         } else if (Objects.equals(shapeType, "circle")) {
             System.out.println("you choose circle. click where you want");
             newShape = new Circle();
-
         } else if (Objects.equals(shapeType, "triangle")) {
             System.out.println("you choose triangle. click where you want");
             newShape = new Triangle();
         }
     }
-    private void showProperty(){
-        for(Shape e :list){
-            System.out.println(e.getPoint().getX()+" : "+e.getPoint().getY());
+
+    private void showProperty() {
+        for (Shape e : list) {
+            System.out.println(e.getPoint().getX() + " : " + e.getPoint().getY());
         }
     }
 }
@@ -249,4 +258,5 @@ public class Program extends PApplet {
 // try with resource;
 
 // 숙제 : json을 통해 저장
-// google의 프로토콜 버퍼 사용해서 해보기
+// google의 프로토 버퍼 사용해서 해보기
+// 여기도transient로된다
