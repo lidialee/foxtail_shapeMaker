@@ -1,4 +1,4 @@
-public class Color {
+public class Color implements Cloneable{
     private int R;
     private int G;
     private int B;

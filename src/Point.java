@@ -1,5 +1,5 @@
 
-public class Point {
+public class Point implements Cloneable{
     private float x;
     private float y;
 

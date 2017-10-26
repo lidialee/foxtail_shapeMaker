@@ -1,11 +1,10 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import processing.core.PApplet;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,8 +57,6 @@ public class Program extends PApplet {
                 clearBoard();
             } else if (keyCode == 'a' || keyCode == 'A') {
                 System.out.println("현재 도형수 : " + list.size());
-            } else if (keyCode == 'o' || keyCode == 'O') {
-
             }
         }
     }
@@ -119,17 +116,17 @@ public class Program extends PApplet {
                     newShape.setPoint(new Point(mouseX, mouseY));
                     list.add(newShape);
                     newShape = null;
+
                     status = MODE_STATUS.MOVE;
+                }else{
+                    System.out.println("collision!!! please click another place");
                 }
                 break;
 
             case COPY:
                 if (collisionShapeNumber != NO_COLLISION) {
                     copyTarget = list.get(collisionShapeNumber);
-                    Point newShapePoint = new Point(copyTarget.getPoint().getX() + 20, copyTarget.getPoint().getY() + 20);
-
                     newShape = copyTarget.clone();
-                    newShape.setPoint(newShapePoint);
                     list.add(newShape);
                     newShape = null;
 
@@ -143,7 +140,7 @@ public class Program extends PApplet {
                 if (newShape == null && collisionShapeNumber != NO_COLLISION) {
                     System.out.println("케이스 Move 진입");
                     choiceShape = list.get(collisionShapeNumber); // 선택한 도형 목록에서 가져오기
-                    choiceShape.setColor(new Color(100,200,50)); // 드래그 중에는 색이 변한다
+                    choiceShape.setClicked(true);
                 }
                 break;
         }
@@ -152,7 +149,6 @@ public class Program extends PApplet {
     @Override
     public void mouseDragged() {
         if (choiceShape != null) {
-            System.out.println("드래그 진입");
             choiceShape.setPoint(new Point(mouseX, mouseY)); // 드래그 될때마다 위치값을 바꾼다
         }
     }
@@ -160,7 +156,7 @@ public class Program extends PApplet {
     @Override
     public void mouseReleased() {
         if (choiceShape != null) {
-            choiceShape.setColor(new Color(0,0,0)); // 드래그 완료되면 원래 색으로 되돌리기
+            choiceShape.setClicked(false);
             choiceShape = null;
         }
     }
@@ -168,14 +164,15 @@ public class Program extends PApplet {
     // 현재 그림판 상태 저장
     //
     private void saveShapes() {
-        try{
-            Gson gson = new Gson();
-            String gsonString = gson.toJson(list);
-            FileWriter writer = new FileWriter("filebox.txt");
-            writer.write(gsonString);
-            writer.close();
+        try( BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("jsonFile.json"))){
+            Gson gson = new GsonBuilder()
+                    .registerTypeHierarchyAdapter(Shape.class, new ShapeTypeAdapter())
+                    .create();
 
-            System.out.println(" 저장 완료 ");
+            String savedJson = gson.toJson(list);
+            bufferedWriter.write(savedJson);
+            System.out.println("저장 완료");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -183,26 +180,14 @@ public class Program extends PApplet {
 
     // 이전 그림 불러오기
     private void loadShapes() {
-        try {
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader("jsonFile.json"))){
             list.clear();   // 먼저 기존을 삭제하고 불러오자
 
-            JsonParser parser = new JsonParser();
-            parser.parse(new FileReader("filebox.txt"));
-            Gson gson = new Gson();
-
-
-            // 각 도형에 대해서 어떻게 저장할지 그 계층을 정의ㅎ해부자
-            //Gson gson1 = new GsonBuilder().registerTypeHierarchyAdapter(Shape.class,new ShapeTypeAdapter).create();
-
-
-            // Shape shape = gson.fromJson( string ,Shape.class);
-
-            // 일단 list<shape>에서 shape를 알아내는 방법
-            // Type type = new TypeToken<List<Shape>>(){}.getType();
-            // Shape shape = gson.fromJson(string인 json, type);
-
-
-
+            Gson gson = new GsonBuilder()
+                    .registerTypeHierarchyAdapter(Shape.class, new ShapeTypeAdapter())
+                    .create();
+            Type type = new TypeToken<List<Shape>>(){}.getType();
+            list = gson.fromJson(bufferedReader,type);
             System.out.println("불러오기 완료");
 
         } catch (IOException e) {
@@ -231,11 +216,28 @@ public class Program extends PApplet {
         }
     }
 
-    private void showProperty() {
-        for (Shape e : list) {
-            System.out.println(e.getPoint().getX() + " : " + e.getPoint().getY());
-        }
-    }
+//    private void showProperty() {
+//        for (Shape e : list) {
+//            if(e.getShapeType() == 3){
+//
+//                Triangle t = (Triangle) e;
+//                Point[] ps =t.getOtherPoints();
+//
+//                System.out.println("꼭지점의 경우");
+//                System.out.println(ps[0].hashCode());
+//                System.out.println(ps[1].hashCode());
+//                System.out.println(ps[2].hashCode());
+//
+//                System.out.println("센터 경우");
+//                System.out.println(t.hashCode());
+//
+//                System.out.println("\n");
+//            }
+////            System.out.println("객체주소 : "+ e.hashCode());
+////            System.out.println("객체 내 point 주소 : " + e.getPoint().hashCode());
+////            System.out.println("객체 내 color 주소 : " + e.getColor().hashCode());
+//        }
+//    }
 }
 
 // 오늘의 개념
@@ -260,3 +262,12 @@ public class Program extends PApplet {
 // 숙제 : json을 통해 저장
 // google의 프로토 버퍼 사용해서 해보기
 // 여기도transient로된다
+
+
+// 각 도형에 대해서 어떻게 저장할지 그 계층을 정의ㅎ해부자
+//Gson gson1 = new GsonBuilder().registerTypeHierarchyAdapter(Shape.class,new ShapeTypeAdapter).create()
+// Shape shape = gson.fromJson( string ,Shape.class);
+// 일단 list<shape>에서 shape를 알아내는 방법
+// Type type = new TypeToken<List<Shape>>(){}.getType();
+// Shape shape = gson.fromJson(string인 json, type);
+

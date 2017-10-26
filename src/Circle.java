@@ -20,8 +20,13 @@ public class Circle extends Shape {
     void draw(PApplet pApplet) {
         // 일단 컬러는 임의로 설정
         Color color = getColor();
-
         pApplet.fill(color.getR(), color.getG(), color.getB());
+
+        if(isClicked())
+            pApplet.stroke(255,255,255);
+        else
+            pApplet.stroke(0,0,0);
+
         pApplet.ellipse(getPoint().getX(), getPoint().getY(), RADIUS * 2, RADIUS * 2);
     }
 
