@@ -22,8 +22,8 @@ public class Point implements Cloneable{
         this.y = y;
     }
 
-   // public static float add
-    // multiple 등등
-
-
+    @Override
+    protected Point clone() throws CloneNotSupportedException {
+        return (Point) super.clone();
+    }
 }

@@ -33,5 +33,8 @@ public class Color implements Cloneable{
         B = b;
     }
 
-
+    @Override
+    protected Color clone() throws CloneNotSupportedException {
+        return (Color) super.clone();
+    }
 }

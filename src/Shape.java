@@ -7,10 +7,6 @@ public abstract class Shape implements Cloneable {
     private Point point;
     private transient boolean isClicked = false;
 
-    public int getShapeType() {
-        return shapeType;
-    }
-
     public Shape(int shapeType) {
         this.shapeType = shapeType;
         color = makeRandomColor();
@@ -20,17 +16,13 @@ public abstract class Shape implements Cloneable {
 
     abstract boolean isCollision(int x, int y);     // (클릭한) 점 ~ 도형의 충돌 검사
 
-    /* (Shape) super.clone()은 도형객체만 deep copy가 될 뿐,
-    *  도형 객체 속 객체들 (point, color)는 shallow copy가 되서
-    *  복사 대상이 된 객체와 복사로 만들어진 객체가 서로 영향을 받게 된다
-    *  그래서 point 와 color는 반드시 new를 통해서 새로운 레퍼런스르 참조하도록 하다
-    *  */
+
     @Override
     public Shape clone() {
         try {
             Shape cloneShape = (Shape) super.clone();
-            cloneShape.setPoint(new Point(point.getX()+20,point.getY()+20));
-            cloneShape.setColor(new Color(color.getR(),color.getG(),color.getB()));
+            cloneShape.setPoint(new Point(this.point.clone().getX()+20,this.point.clone().getY()+20));
+            cloneShape.setColor(this.color.clone());
             return cloneShape;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

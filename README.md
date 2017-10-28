@@ -4,4 +4,4 @@
 
 
 ##### 10 / 24 : read and write using json(Gson)
-#### 수정 
+##### 10 / 26 : fix triangle copy bug (shallow copy, deep copy)
